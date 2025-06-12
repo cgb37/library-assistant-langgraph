@@ -55,9 +55,20 @@ class ProjectService:
         if not ObjectId.is_valid(project_id):
             return None
         
-        update_dict = {k: v for k, v in project_data.dict().items() if v is not None}
+        # Use model_dump() or dict() method based on Pydantic version
+        try:
+            # Pydantic v2
+            update_dict = {k: v for k, v in project_data.model_dump().items() if v is not None}
+        except AttributeError:
+            # Pydantic v1
+            update_dict = {k: v for k, v in project_data.dict().items() if v is not None}
+        
         if not update_dict:
             return await self.get_project(project_id)
+            
+        # Add updated_at timestamp if not already in the update
+        if 'updated_at' not in update_dict:
+            update_dict['updated_at'] = datetime.utcnow()
             
         await self.collection.update_one(
             {"_id": ObjectId(project_id)}, 
