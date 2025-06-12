@@ -209,7 +209,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (projectId && projectIdInput) {
                 // Get existing values from the form (already populated by the template)
-                const name = projectNameInput.value;
                 const description = projectDescriptionInput.value;
                 
                 // Setup form for edit mode
