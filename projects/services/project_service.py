@@ -4,6 +4,7 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from projects.models.project import Project, ProjectCreate, ProjectUpdate
 from typing import Optional, List
 from bson import ObjectId
+from datetime import datetime
 
 class ProjectService:
     def __init__(self, database: AsyncIOMotorDatabase):
@@ -11,6 +12,8 @@ class ProjectService:
 
     async def create_project(self, project_data: ProjectCreate) -> Project:
         project_dict = project_data.dict()
+        project_dict["created_at"] = datetime.utcnow()
+        project_dict["updated_at"] = datetime.utcnow()
         result = await self.collection.insert_one(project_dict)
         created_project = await self.collection.find_one({"_id": result.inserted_id})
         created_project["_id"] = str(created_project["_id"])
@@ -19,6 +22,22 @@ class ProjectService:
     async def get_projects(self) -> List[Project]:
         projects = []
         async for project_doc in self.collection.find():
+            project_doc["_id"] = str(project_doc["_id"])
+            projects.append(Project(**project_doc))
+        return projects
+    
+    async def get_recent_projects(self, limit: int = 5) -> List[Project]:
+        """
+        Get recent projects for sidebar display
+        
+        Args:
+            limit: Number of projects to return
+            
+        Returns:
+            List of recent projects
+        """
+        projects = []
+        async for project_doc in self.collection.find().sort("updated_at", -1).limit(limit):
             project_doc["_id"] = str(project_doc["_id"])
             projects.append(Project(**project_doc))
         return projects
@@ -36,9 +55,20 @@ class ProjectService:
         if not ObjectId.is_valid(project_id):
             return None
         
-        update_dict = {k: v for k, v in project_data.dict().items() if v is not None}
+        # Use model_dump() or dict() method based on Pydantic version
+        try:
+            # Pydantic v2
+            update_dict = {k: v for k, v in project_data.model_dump().items() if v is not None}
+        except AttributeError:
+            # Pydantic v1
+            update_dict = {k: v for k, v in project_data.dict().items() if v is not None}
+        
         if not update_dict:
             return await self.get_project(project_id)
+            
+        # Add updated_at timestamp if not already in the update
+        if 'updated_at' not in update_dict:
+            update_dict['updated_at'] = datetime.utcnow()
             
         await self.collection.update_one(
             {"_id": ObjectId(project_id)}, 

@@ -1,12 +1,15 @@
-from quart import Quart, render_template, request, jsonify
+from quart import Quart, render_template, request, jsonify, g
 from main import get_library_assistant_response
 from projects.api.routes import api as projects_api
 from projects.routes.routes import routes as projects_routes
 from chats.api.routes import api as chats_api
 from chats.routes.routes import chats_routes
-from shared.database_service import close_database
+from chats.services.chat_service import ChatService
+from projects.services.project_service import ProjectService
+from shared.database_service import close_database, get_database
 
 app = Quart(__name__)
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 @app.after_serving
 async def close_db():
@@ -32,6 +35,18 @@ async def chat():
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.context_processor
+async def inject_common_data():
+    # Provide last 10 chats and 5 recent projects to all templates
+    database = await get_database()
+    chat_service = ChatService(database)
+    project_service = ProjectService(database)
+    
+    recent_chats = await chat_service.get_chats(limit=10)
+    recent_projects = await project_service.get_recent_projects(limit=5)
+    
+    return dict(recent_chats=recent_chats, recent_projects=recent_projects)
 
 app.register_blueprint(projects_api)
 app.register_blueprint(projects_routes)
