@@ -11,4 +11,4 @@ async def chats_list():
     database = await get_database()
     chat_service = ChatService(database)
     chats = await chat_service.get_chats()
-    return await render_template('chats_list.html', chats=chats)
+    return await render_template('chats/chats_list.html', chats=chats)
