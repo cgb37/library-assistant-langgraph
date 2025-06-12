@@ -1,6 +1,15 @@
 <!-- templates/_sidebar_right.html -->
 <aside id="projectFiles" class="fixed right-0 top-16 bottom-0 w-64 bg-gray-900 text-gray-100 shadow-lg z-40 panel-transition project-files-closed lg:project-files-open lg:relative lg:z-auto lg:top-0 lg:flex-shrink-0">
-    <h3 class="p-4 font-bold text-xl border-b border-gray-800">Projects</h3>
+    <div class="p-4 font-bold text-xl border-b border-gray-800">
+        <h3>Projects</h3>
+    </div>
+    <div class="project-toggle-container">
+        <button id="projectFilesToggle" class="w-full h-full text-gray-400 hover:text-white focus:outline-none">
+            <svg class="w-5 h-5 project-toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+        </button>
+    </div>
     <nav class="flex-1 overflow-y-auto h-full">
          <ul class="mt-4 space-y-2 px-2">
             <li><a href="/projects/create" class="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">New Project</a></li>
