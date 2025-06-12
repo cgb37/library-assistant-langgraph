@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         setTimeout(() => location.reload(), 1000);
                     } else {
                         // If creating new project, redirect to projects list
-                        setTimeout(() => location.href = '/projects', 1000);
+                        setTimeout(() => location.href = escape('/projects'), 1000);
                     }
                 } else {
                     const error = await response.json();
@@ -229,6 +229,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     cancelButton.classList.remove('hidden');
                 }
             }
+        }
+    }
+
+    // Add escape function if not already defined
+    if (typeof escape !== 'function') {
+        function escape(url) {
+            const a = document.createElement('a');
+            a.href = url;
+            return a.href;
         }
     }
 });
