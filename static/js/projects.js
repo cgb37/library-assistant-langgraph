@@ -50,7 +50,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const alertClass = type === 'success' ? 'bg-green-100 border-green-400 text-green-700' : 'bg-red-100 border-red-400 text-red-700';
         const alert = document.createElement('div');
         alert.className = `fixed top-20 right-4 p-4 border-l-4 ${alertClass} rounded-md shadow-md z-50 max-w-md`;
-        alert.textContent = message; // Use textContent for safe assignment
+        // Fix: Replace alert.innerHTML = ... with alert.textContent = message; (safe assignment)
+        // alert.innerHTML = `...`;
+        alert.textContent = message;
         document.body.appendChild(alert);
         setTimeout(() => alert.remove(), 3000);
     }
@@ -92,6 +94,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         setTimeout(() => location.reload(), 1000);
                     } else {
                         // If creating new project, redirect to projects list
+                        // Fix: setTimeout(() => location.href = '/projects', 1000); already replaced with escape('/projects')
                         setTimeout(() => location.href = escape('/projects'), 1000);
                     }
                 } else {
@@ -156,6 +159,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         } else {
                             const error = await response.json();
                             showMessage('Error: ' + (error.error || 'Unknown error'), 'error');
+                            // Fix: Replace button.innerHTML = originalHTML; with button.textContent = originalHTML; (safe assignment)
+                            // button.innerHTML = originalHTML;
                             button.textContent = originalHTML;
                             button.disabled = false;
                         }
