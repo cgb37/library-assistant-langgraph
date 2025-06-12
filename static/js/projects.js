@@ -1,4 +1,11 @@
 // Enhanced Projects CRUD functionality with better UX
+// Move escape function to the root scope
+function escape(url) {
+    const a = document.createElement('a');
+    a.href = url;
+    return a.href;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const projectForm = document.getElementById('project-form');
     const projectsList = document.getElementById('projects-list');
@@ -203,15 +210,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     cancelButton.classList.remove('hidden');
                 }
             }
-        }
-    }
-
-    // Add escape function if not already defined
-    if (typeof escape !== 'function') {
-        function escape(url) {
-            const a = document.createElement('a');
-            a.href = url;
-            return a.href;
         }
     }
 });
