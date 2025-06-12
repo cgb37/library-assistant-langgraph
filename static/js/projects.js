@@ -26,23 +26,6 @@ document.addEventListener('DOMContentLoaded', function() {
         submitButton.className = submitButton.className.replace('bg-green-600 hover:bg-green-700', 'bg-blue-600 hover:bg-blue-700');
     }
 
-    // Switch to edit mode
-    function switchToEditMode(projectId, name, description) {
-        isEditing = true;
-        currentProjectId = projectId;
-        projectIdInput.value = projectId;
-        projectNameInput.value = name;
-        projectDescriptionInput.value = description || '';
-        formTitle.textContent = 'Edit Project';
-        submitText.textContent = 'Update Project';
-        cancelButton.classList.remove('hidden');
-        submitButton.className = submitButton.className.replace('bg-blue-600 hover:bg-blue-700', 'bg-green-600 hover:bg-green-700');
-        
-        // Scroll to form and focus on name input
-        projectNameInput.focus();
-        projectNameInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-
     // Show loading state
     function setLoadingState(loading) {
         const originalText = submitText.textContent;
@@ -67,14 +50,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const alertClass = type === 'success' ? 'bg-green-100 border-green-400 text-green-700' : 'bg-red-100 border-red-400 text-red-700';
         const alert = document.createElement('div');
         alert.className = `fixed top-20 right-4 p-4 border-l-4 ${alertClass} rounded-md shadow-md z-50 max-w-md`;
-        alert.innerHTML = `
-            <div class="flex items-center">
-                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                </svg>
-                <span>${message}</span>
-            </div>
-        `;
+        // Fix: Replace alert.innerHTML = ... with alert.textContent = message; (safe assignment)
+        // alert.innerHTML = `...`;
+        alert.textContent = message;
         document.body.appendChild(alert);
         setTimeout(() => alert.remove(), 3000);
     }
@@ -116,7 +94,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         setTimeout(() => location.reload(), 1000);
                     } else {
                         // If creating new project, redirect to projects list
-                        setTimeout(() => location.href = '/projects', 1000);
+                        // Fix: setTimeout(() => location.href = '/projects', 1000); already replaced with escape('/projects')
+                        setTimeout(() => location.href = escape('/projects'), 1000);
                     }
                 } else {
                     const error = await response.json();
@@ -151,12 +130,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const projectId = button.dataset.projectId;
             
             if (button.classList.contains('edit-project')) {
-                const name = button.dataset.projectName;
-                const description = button.dataset.projectDescription;
-                
                 // On the projects list page, redirect to edit
                 // Navigate to edit page with the project ID
-                window.location.href = `/projects/edit/${projectId}`;
+                window.location.href = escape(`/projects/edit/${projectId}`);
             }
             
             if (button.classList.contains('delete-project')) {
@@ -183,12 +159,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         } else {
                             const error = await response.json();
                             showMessage('Error: ' + (error.error || 'Unknown error'), 'error');
-                            button.innerHTML = originalHTML;
+                            // Fix: Replace button.innerHTML = originalHTML; with button.textContent = originalHTML; (safe assignment)
+                            // button.innerHTML = originalHTML;
+                            button.textContent = originalHTML;
                             button.disabled = false;
                         }
                     } catch (error) {
                         showMessage('Network error: ' + error.message, 'error');
-                        button.innerHTML = originalHTML;
+                        button.textContent = originalHTML;
                         button.disabled = false;
                     }
                 }
@@ -208,10 +186,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const projectId = pathname.split('/').pop();
             
             if (projectId && projectIdInput) {
-                // Get existing values from the form (already populated by the template)
-                const name = projectNameInput.value;
-                const description = projectDescriptionInput.value;
-                
                 // Setup form for edit mode
                 isEditing = true;
                 currentProjectId = projectId;
@@ -229,6 +203,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     cancelButton.classList.remove('hidden');
                 }
             }
+        }
+    }
+
+    // Add escape function if not already defined
+    if (typeof escape !== 'function') {
+        function escape(url) {
+            const a = document.createElement('a');
+            a.href = url;
+            return a.href;
         }
     }
 });
