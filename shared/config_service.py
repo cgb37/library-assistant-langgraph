@@ -9,8 +9,16 @@ from typing import Any
 
 class ConfigService:
     def __init__(self):
+        # MongoDB configuration
+        mongo_username = os.getenv('MONGO_INITDB_ROOT_USERNAME', 'admin')
+        mongo_password = os.getenv('MONGO_INITDB_ROOT_PASSWORD', 'password')
+        mongo_host = os.getenv('MONGO_HOST', 'localhost')
+        mongo_port = os.getenv('MONGO_PORT', '27017')
+        mongo_database = os.getenv('MONGO_INITDB_DATABASE', 'library_assistant')
+        
         self.config = {
-            'DATABASE_URL': os.getenv('DATABASE_URL', 'sqlite:///library_assistant.db')
+            'MONGO_URL': f'mongodb://{mongo_username}:{mongo_password}@{mongo_host}:{mongo_port}/?authSource=admin',
+            'MONGO_DATABASE': mongo_database
         }
 
     def get(self, key: str, default: Any = None) -> Any:
