@@ -16,11 +16,14 @@ RUN apt-get update && apt-get install -y \
 # Install build backend for pyproject.toml (PEP 517/518)
 RUN pip install --upgrade pip setuptools wheel
 
-# Copy project files
-COPY . /app/
+# Copy only dependency files first for better caching
+COPY requirements.txt /app/
 
-# Install project dependencies using uv
-RUN pip install uv && uv pip install --system langchain langchain-core langchain-ollama langgraph quart
+# Install uv and dependencies from requirements file
+RUN pip install uv && uv pip install --system --requirements requirements.txt
+
+# Now copy the rest of the code
+COPY . /app/
 
 # Expose port 8000
 EXPOSE 8000

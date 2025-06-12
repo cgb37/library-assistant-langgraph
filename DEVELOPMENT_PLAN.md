@@ -33,6 +33,10 @@ Integrate the LangGraph-powered library assistant from [`main.py`](main.py) into
 - Add user session support.
 - Persist chat history.
 - Add tests and linting.
+- Add CRUD for projects.
+  - Allow users to create projects with a name and description.
+  - Display the list of projects in the right sidebar.
+  - (Eventually) Associate chats with projects.
 
 ---
 

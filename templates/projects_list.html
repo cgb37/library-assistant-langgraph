@@ -1,0 +1,305 @@
+{% extends "base.html" %}
+
+{% block title %}Projects{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Projects</h1>
+        <p class="text-gray-600 dark:text-gray-300">Manage your research projects and library resources</p>
+    </div>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Projects List -->
+        <div class="lg:col-span-2">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                    <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Your Projects</h2>
+                </div>
+                
+                <div id="projects-list" class="divide-y divide-gray-200 dark:divide-gray-700">
+                    {% if projects %}
+                        {% for project in projects %}
+                        <div class="project-item p-6 hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors duration-200" data-project-id="{{ project.id }}">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1 min-w-0">
+                                    <h3 class="text-lg font-medium text-gray-900 dark:text-white truncate project-name">
+                                        {{ project.name }}
+                                    </h3>
+                                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-300 project-description">
+                                        {{ project.description or 'No description provided' }}
+                                    </p>
+                                
+                                </div>
+                                
+                                <div class="flex items-center space-x-2 ml-4">
+                                    <button class="edit-project p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200" 
+                                            data-project-id="{{ project.id }}" 
+                                            data-project-name="{{ project.name }}"
+                                            data-project-description="{{ project.description or '' }}"
+                                            title="Edit project">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                        </svg>
+                                    </button>
+                                    <button class="delete-project p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-200" 
+                                            data-project-id="{{ project.id }}"
+                                            title="Delete project">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="p-12 text-center">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                            </svg>
+                            <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">No projects yet</h3>
+                            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Get started by creating your first research project.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Create/Edit Form -->
+        <div class="lg:col-span-1">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 sticky top-24">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                    <h2 id="form-title" class="text-xl font-semibold text-gray-900 dark:text-white">Create New Project</h2>
+                </div>
+                
+                <div class="p-6">
+                    <form id="project-form">
+                        <input type="hidden" id="project-id" value="">
+                        
+                        <div class="mb-6">
+                            <label for="project-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Project Name <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" 
+                                   id="project-name" 
+                                   name="name"
+                                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                   placeholder="Enter project name"
+                                   required>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label for="project-description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Description
+                            </label>
+                            <textarea id="project-description" 
+                                      name="description"
+                                      rows="4"
+                                      class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
+                                      placeholder="Describe your research project..."></textarea>
+                        </div>
+                        
+                        <div class="flex flex-col space-y-3">
+                            <button type="submit" 
+                                    id="submit-button"
+                                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
+                                <span id="submit-text">Create Project</span>
+                            </button>
+                            
+                            <button type="button" 
+                                    id="cancel-button"
+                                    class="w-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-700 dark:text-gray-200 font-medium py-2 px-4 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 hidden">
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Enhanced Projects CRUD functionality with better UX
+document.addEventListener('DOMContentLoaded', function() {
+    const projectForm = document.getElementById('project-form');
+    const projectsList = document.getElementById('projects-list');
+    const formTitle = document.getElementById('form-title');
+    const submitButton = document.getElementById('submit-button');
+    const submitText = document.getElementById('submit-text');
+    const cancelButton = document.getElementById('cancel-button');
+    const projectIdInput = document.getElementById('project-id');
+    const projectNameInput = document.getElementById('project-name');
+    const projectDescriptionInput = document.getElementById('project-description');
+
+    let isEditing = false;
+    let currentProjectId = null;
+
+    // Reset form to create mode
+    function resetForm() {
+        isEditing = false;
+        currentProjectId = null;
+        projectIdInput.value = '';
+        projectNameInput.value = '';
+        projectDescriptionInput.value = '';
+        formTitle.textContent = 'Create New Project';
+        submitText.textContent = 'Create Project';
+        cancelButton.classList.add('hidden');
+        submitButton.className = submitButton.className.replace('bg-green-600 hover:bg-green-700', 'bg-blue-600 hover:bg-blue-700');
+    }
+
+    // Switch to edit mode
+    function switchToEditMode(projectId, name, description) {
+        isEditing = true;
+        currentProjectId = projectId;
+        projectIdInput.value = projectId;
+        projectNameInput.value = name;
+        projectDescriptionInput.value = description || '';
+        formTitle.textContent = 'Edit Project';
+        submitText.textContent = 'Update Project';
+        cancelButton.classList.remove('hidden');
+        submitButton.className = submitButton.className.replace('bg-blue-600 hover:bg-blue-700', 'bg-green-600 hover:bg-green-700');
+        
+        // Scroll to form and focus on name input
+        projectNameInput.focus();
+        projectNameInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    // Show loading state
+    function setLoadingState(loading) {
+        const originalText = submitText.textContent;
+        if (loading) {
+            submitButton.disabled = true;
+            submitText.textContent = isEditing ? 'Updating...' : 'Creating...';
+            submitButton.className = submitButton.className.replace(/bg-(blue|green)-600/, 'bg-gray-500').replace(/hover:bg-(blue|green)-700/, '');
+        } else {
+            submitButton.disabled = false;
+            submitText.textContent = originalText;
+            submitButton.className = submitButton.className.replace('bg-gray-500', isEditing ? 'bg-green-600' : 'bg-blue-600');
+            if (isEditing) {
+                submitButton.className += ' hover:bg-green-700';
+            } else {
+                submitButton.className += ' hover:bg-blue-700';
+            }
+        }
+    }
+
+    // Show success message
+    function showMessage(message, type = 'success') {
+        const alertClass = type === 'success' ? 'bg-green-100 border-green-400 text-green-700' : 'bg-red-100 border-red-400 text-red-700';
+        const alert = document.createElement('div');
+        alert.className = `fixed top-20 right-4 p-4 border-l-4 ${alertClass} rounded-md shadow-md z-50 max-w-md`;
+        alert.innerHTML = `
+            <div class="flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <span>${message}</span>
+            </div>
+        `;
+        document.body.appendChild(alert);
+        setTimeout(() => alert.remove(), 3000);
+    }
+
+    // Handle form submission (create or update)
+    projectForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const name = projectNameInput.value.trim();
+        const description = projectDescriptionInput.value.trim();
+        
+        if (!name) {
+            projectNameInput.focus();
+            return;
+        }
+
+        setLoadingState(true);
+        
+        try {
+            const url = isEditing ? `/api/projects/${currentProjectId}` : '/api/projects/';
+            const method = isEditing ? 'PUT' : 'POST';
+            
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, description })
+            });
+            
+            if (response.ok) {
+                const action = isEditing ? 'updated' : 'created';
+                showMessage(`Project ${action} successfully!`);
+                resetForm();
+                setTimeout(() => location.reload(), 1000); // Reload after showing success message
+            } else {
+                const error = await response.json();
+                showMessage('Error: ' + (error.error || 'Unknown error'), 'error');
+            }
+        } catch (error) {
+            showMessage('Network error: ' + error.message, 'error');
+        } finally {
+            setLoadingState(false);
+        }
+    });
+
+    // Handle cancel button
+    cancelButton.addEventListener('click', function() {
+        resetForm();
+    });
+
+    // Handle edit and delete buttons
+    projectsList.addEventListener('click', async function(e) {
+        const button = e.target.closest('button');
+        if (!button) return;
+
+        const projectId = button.dataset.projectId;
+        
+        if (button.classList.contains('edit-project')) {
+            const name = button.dataset.projectName;
+            const description = button.dataset.projectDescription;
+            switchToEditMode(projectId, name, description);
+        }
+        
+        if (button.classList.contains('delete-project')) {
+            const projectName = button.closest('.project-item').querySelector('.project-name').textContent.trim();
+            
+            if (confirm(`Are you sure you want to delete "${projectName}"? This action cannot be undone.`)) {
+                // Show loading state for delete button
+                const originalHTML = button.innerHTML;
+                button.innerHTML = '<svg class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>';
+                button.disabled = true;
+                
+                try {
+                    const response = await fetch(`/api/projects/${projectId}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (response.ok) {
+                        showMessage('Project deleted successfully!');
+                        // Reset form if we were editing this project
+                        if (currentProjectId === projectId) {
+                            resetForm();
+                        }
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        const error = await response.json();
+                        showMessage('Error: ' + (error.error || 'Unknown error'), 'error');
+                        button.innerHTML = originalHTML;
+                        button.disabled = false;
+                    }
+                } catch (error) {
+                    showMessage('Network error: ' + error.message, 'error');
+                    button.innerHTML = originalHTML;
+                    button.disabled = false;
+                }
+            }
+        }
+    });
+
+    // Initialize form in create mode
+    resetForm();
+});
+</script>
+{% endblock %}
