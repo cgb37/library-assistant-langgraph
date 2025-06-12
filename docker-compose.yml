@@ -8,6 +8,13 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - PYTHONDONTWRITEBYTECODE=1
+      - MONGO_HOST=mongodb
+      - MONGO_PORT=27017
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME:-admin}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD:-password}
+      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE:-library_assistant}
+    depends_on:
+      - mongodb
 
   mongodb:
     image: mongo:7
