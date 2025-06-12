@@ -1,4 +1,4 @@
-<!-- templates/_project_files.html -->
+<!-- templates/_sidebar_right.html -->
 <aside id="projectFiles" class="fixed right-0 top-16 bottom-0 w-64 bg-gray-900 text-gray-100 shadow-lg z-40 panel-transition project-files-closed lg:project-files-open lg:relative lg:z-auto lg:top-0 lg:flex-shrink-0">
     <h3 class="p-4 font-bold text-xl border-b border-gray-800">Projects</h3>
     <nav class="flex-1 overflow-y-auto h-full">
@@ -8,38 +8,20 @@
         </ul>
         <div class="mt-2">
             <div class="text-xs text-gray-400 uppercase px-4 pb-1">Recent</div>
-            <div id="sidebar-projects">
-                <!-- This will be populated dynamically -->
-                <p class="text-sm text-gray-500">Loading projects...</p>
-            </div>
+            {% if recent_projects %}
+            <ul class="space-y-1">
+                {% for project in recent_projects %}
+                <li>
+                    <a href="/projects#project-{{ project.id }}" class="block px-4 py-1 rounded hover:bg-gray-800 truncate text-sm transition-colors" title="{{ project.name }}">
+                        <div class="font-medium">{{ project.name }}</div>
+                        <div class="text-gray-400 text-xs truncate">{{ project.description or 'No description' }}</div>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-sm text-gray-500 px-4">No projects yet</p>
+            {% endif %}
         </div>
     </nav>
 </aside>
-
-<script>
-// Load projects in sidebar
-async function loadSidebarProjects() {
-    try {
-        const response = await fetch('/api/projects/');
-        if (response.ok) {
-            const projects = await response.json();
-            const container = document.getElementById('sidebar-projects');
-            if (projects.length === 0) {
-                container.innerHTML = '<p class="text-sm text-gray-500">No projects yet</p>';
-            } else {
-                container.innerHTML = projects.slice(0, 5).map(project => 
-                    `<a href="/projects#project-${project.id}" class="block px-4 py-1 rounded hover:bg-gray-800 truncate text-sm transition-colors mb-1" title="${project.name}">
-                        <div class="font-medium">${project.name}</div>
-                        <div class="text-gray-400 text-xs truncate">${project.description || 'No description'}</div>
-                    </a>`
-                ).join('');
-            }
-        }
-    } catch (error) {
-        console.error('Error loading projects:', error);
-        document.getElementById('sidebar-projects').innerHTML = '<p class="text-sm text-red-400">Error loading projects</p>';
-    }
-}
-
-document.addEventListener('DOMContentLoaded', loadSidebarProjects);
-</script>

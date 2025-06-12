@@ -5,6 +5,7 @@ from projects.routes.routes import routes as projects_routes
 from chats.api.routes import api as chats_api
 from chats.routes.routes import chats_routes
 from chats.services.chat_service import ChatService
+from projects.services.project_service import ProjectService
 from shared.database_service import close_database, get_database
 
 app = Quart(__name__)
@@ -36,12 +37,16 @@ async def chat():
         return jsonify({"error": str(e)}), 500
 
 @app.context_processor
-async def inject_recent_chats():
-    # Provide last 10 chats to all templates
+async def inject_common_data():
+    # Provide last 10 chats and 5 recent projects to all templates
     database = await get_database()
     chat_service = ChatService(database)
+    project_service = ProjectService(database)
+    
     recent_chats = await chat_service.get_chats(limit=10)
-    return dict(recent_chats=recent_chats)
+    recent_projects = await project_service.get_recent_projects(limit=5)
+    
+    return dict(recent_chats=recent_chats, recent_projects=recent_projects)
 
 app.register_blueprint(projects_api)
 app.register_blueprint(projects_routes)
