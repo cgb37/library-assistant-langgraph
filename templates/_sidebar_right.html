@@ -2,26 +2,25 @@
 <aside id="projectFiles" class="fixed right-0 top-16 bottom-0 w-64 bg-gray-900 text-gray-100 shadow-lg z-40 panel-transition project-files-closed lg:project-files-open lg:relative lg:z-auto lg:top-0 lg:flex-shrink-0">
     <h3 class="p-4 font-bold text-xl border-b border-gray-800">Projects</h3>
     <nav class="flex-1 overflow-y-auto h-full">
-        <ul class="mt-4 space-y-2 px-2">
-            <li><a href="/projects" class="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">All Projects</a></li>
-            <li><a href="/projects/create" class="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">Create New Project</a></li>
-        </ul>
-        <div class="mt-2">
-            <div class="text-xs text-gray-400 uppercase px-4 pb-1">Recent</div>
+         <ul class="mt-4 space-y-2 px-2">
+            <li><a href="/projects/create" class="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">New Project</a></li>
+            <li><a href="/projects" class="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">Saved Projects</a></li>
             {% if recent_projects %}
+            <li class="mt-2">
+            <div class="text-xs text-gray-400 uppercase px-4 pb-1">Recent</div>
             <ul class="space-y-1">
                 {% for project in recent_projects %}
                 <li>
                     <a href="/projects#project-{{ project.id }}" class="block px-4 py-1 rounded hover:bg-gray-800 truncate text-sm transition-colors" title="{{ project.name }}">
-                        <div class="font-medium">{{ project.name }}</div>
-                        <div class="text-gray-400 text-xs truncate">{{ project.description or 'No description' }}</div>
+                        {{ project.name | truncate(32) }}
                     </a>
                 </li>
                 {% endfor %}
             </ul>
+            </li>
             {% else %}
-            <p class="text-sm text-gray-500 px-4">No projects yet</p>
+            <p class="text-sm text-gray-500 px-4">No saved projects yet</p>
             {% endif %}
-        </div>
+        </ul>
     </nav>
 </aside>
