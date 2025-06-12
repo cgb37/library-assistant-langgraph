@@ -49,7 +49,7 @@ document.getElementById('chatForm')?.addEventListener('submit', async function(e
         submitButton.textContent = 'Sending...';
         submitButton.className = submitButton.className.replace('bg-blue-600', 'bg-gray-500 cursor-not-allowed').replace('hover:bg-blue-700', '');
 
-        const userQuery = input.value;
+                const userQuery = input.value;
         input.value = '';
 
         // Send to backend
@@ -66,7 +66,7 @@ document.getElementById('chatForm')?.addEventListener('submit', async function(e
             
             if (data.response) {
                 const botBubble = document.createElement('div');
-                botBubble.className = 'self-start max-w-lg bg-gray-800 text-white rounded-lg px-4 py-2 shadow';
+                botBubble.className = 'self-start max-w-lg bg-gray-800 text-white rounded-lg px-4 py-2 shadow relative group';
                 
                 // Add routing info if available
                 let responseText = data.response;
@@ -74,8 +74,100 @@ document.getElementById('chatForm')?.addEventListener('submit', async function(e
                     responseText = `🎯 ${data.support_level.toUpperCase()} Support\n💭 ${data.routing_reason}\n\n${responseText}`;
                 }
                 
-                botBubble.style.whiteSpace = 'pre-wrap';
-                botBubble.textContent = responseText;
+                // Create response container with buttons
+                const responseContainer = document.createElement('div');
+                responseContainer.style.whiteSpace = 'pre-wrap';
+                responseContainer.textContent = responseText;
+                
+                // Create buttons container
+                const buttonsContainer = document.createElement('div');
+                buttonsContainer.className = 'absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-1';
+                
+                // Copy button
+                const copyButton = document.createElement('button');
+                copyButton.className = 'p-1 bg-gray-600 hover:bg-gray-500 rounded text-xs transition-colors duration-200';
+                copyButton.innerHTML = `
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                `;
+                copyButton.title = 'Copy to clipboard';
+                copyButton.addEventListener('click', async () => {
+                    try {
+                        await navigator.clipboard.writeText(data.response);
+                        copyButton.innerHTML = `
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        `;
+                        setTimeout(() => {
+                            copyButton.innerHTML = `
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                </svg>
+                            `;
+                        }, 2000);
+                    } catch (err) {
+                        console.error('Failed to copy text: ', err);
+                    }
+                });
+                
+                // Save button
+                const saveButton = document.createElement('button');
+                saveButton.className = 'p-1 bg-blue-600 hover:bg-blue-500 rounded text-xs transition-colors duration-200';
+                saveButton.innerHTML = `
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                    </svg>
+                `;
+                saveButton.title = 'Save chat';
+                saveButton.addEventListener('click', async () => {
+                    try {
+                        const originalHTML = saveButton.innerHTML;
+                        saveButton.innerHTML = `
+                            <svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                        `;
+                        
+                        const response = await fetch('/api/chats/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                user_query: userQuery,
+                                ai_response: data.response,
+                                model_used: 'llama3.3',
+                                support_level: data.support_level,
+                                routing_reason: data.routing_reason
+                            })
+                        });
+                        
+                        if (response.ok) {
+                            saveButton.innerHTML = `
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            `;
+                            setTimeout(() => {
+                                saveButton.innerHTML = originalHTML;
+                            }, 2000);
+                        } else {
+                            saveButton.innerHTML = originalHTML;
+                            console.error('Failed to save chat');
+                        }
+                    } catch (err) {
+                        console.error('Failed to save chat: ', err);
+                        saveButton.innerHTML = originalHTML;
+                    }
+                });
+                
+                buttonsContainer.appendChild(copyButton);
+                buttonsContainer.appendChild(saveButton);
+                
+                botBubble.appendChild(responseContainer);
+                botBubble.appendChild(buttonsContainer);
                 chatWindow.appendChild(botBubble);
                 chatWindow.scrollTop = chatWindow.scrollHeight;
             } else if (data.error) {
