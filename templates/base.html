@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Chat UI Mockup{% endblock %}</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+      }
+    </script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:400,700&display=swap">
+    <style>
+      body { font-family: 'Inter', sans-serif; }
+      .dark body { background: #18181b; color: #f3f4f6; }
+    </style>
+    {% block head %}{% endblock %}
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 min-h-screen transition-colors duration-300">
+    {% include "_sidebar.html" %}
+    {% include "_header.html" %}
+    {% include "_project_files.html" %}
+    <main class="pt-20 pb-24 px-4 ml-64 mr-64 min-h-screen">
+        {% block content %}{% endblock %}
+    </main>
+    {% include "_footer.html" %}
+    <script src="/static/chatui.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
