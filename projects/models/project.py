@@ -1,13 +1,25 @@
 # Project model for the projects feature
 
-from sqlalchemy import Column, Integer, String, Text
-from sqlalchemy.orm import declarative_base
+from pydantic import BaseModel, Field
+from typing import Optional, Annotated
+from bson import ObjectId
 
-Base = declarative_base()
+class ProjectBase(BaseModel):
+    name: str = Field(..., max_length=100)
+    description: Optional[str] = None
 
-class Project(Base):
-    __tablename__ = 'projects'
+class ProjectCreate(ProjectBase):
+    pass
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(100), nullable=False)
-    description = Column(Text, nullable=True)
+class ProjectUpdate(BaseModel):
+    name: Optional[str] = Field(None, max_length=100)
+    description: Optional[str] = None
+
+class Project(ProjectBase):
+    id: Optional[str] = Field(default=None, alias="_id")
+    
+    model_config = {
+        "validate_by_name": True,
+        "arbitrary_types_allowed": True,
+        "json_encoders": {ObjectId: str}
+    }

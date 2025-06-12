@@ -1,16 +1,18 @@
 # API routes for project CRUD (JSON endpoints)
 
 from quart import Blueprint, request, jsonify
-from shared.database_service import get_db
+from shared.database_service import get_database
 from projects.services.project_service import ProjectService
+from projects.models.project import ProjectCreate, ProjectUpdate
 
 api = Blueprint('projects_api', __name__, url_prefix='/api/projects')
 
 @api.route('/', methods=['GET'])
 async def list_projects():
-    async for db in get_db():
-        projects = await ProjectService.get_projects(db)
-        return jsonify([{'id': p.id, 'name': p.name, 'description': p.description} for p in projects])
+    database = await get_database()
+    project_service = ProjectService(database)
+    projects = await project_service.get_projects()
+    return jsonify([{'id': str(p.id), 'name': p.name, 'description': p.description} for p in projects])
 
 @api.route('/', methods=['POST'])
 async def create_project():
@@ -19,27 +21,32 @@ async def create_project():
     description = data.get('description')
     if not name:
         return jsonify({'error': 'Name is required'}), 400
-    async for db in get_db():
-        project = await ProjectService.create_project(db, name, description)
-        return jsonify({'id': project.id, 'name': project.name, 'description': project.description}), 201
+    
+    database = await get_database()
+    project_service = ProjectService(database)
+    project_data = ProjectCreate(name=name, description=description)
+    project = await project_service.create_project(project_data)
+    return jsonify({'id': str(project.id), 'name': project.name, 'description': project.description}), 201
 
-@api.route('/<int:project_id>', methods=['PUT'])
+@api.route('/<project_id>', methods=['PUT'])
 async def update_project(project_id):
     data = await request.get_json()
     name = data.get('name')
     description = data.get('description')
-    if not name:
-        return jsonify({'error': 'Name is required'}), 400
-    async for db in get_db():
-        project = await ProjectService.update_project(db, project_id, name, description)
-        if not project:
-            return jsonify({'error': 'Project not found'}), 404
-        return jsonify({'id': project.id, 'name': project.name, 'description': project.description})
+    
+    database = await get_database()
+    project_service = ProjectService(database)
+    project_data = ProjectUpdate(name=name, description=description)
+    project = await project_service.update_project(project_id, project_data)
+    if not project:
+        return jsonify({'error': 'Project not found'}), 404
+    return jsonify({'id': str(project.id), 'name': project.name, 'description': project.description})
 
-@api.route('/<int:project_id>', methods=['DELETE'])
+@api.route('/<project_id>', methods=['DELETE'])
 async def delete_project(project_id):
-    async for db in get_db():
-        project = await ProjectService.delete_project(db, project_id)
-        if not project:
-            return jsonify({'error': 'Project not found'}), 404
-        return jsonify({'result': 'success'})
+    database = await get_database()
+    project_service = ProjectService(database)
+    success = await project_service.delete_project(project_id)
+    if not success:
+        return jsonify({'error': 'Project not found'}), 404
+    return jsonify({'result': 'success'})

@@ -1,42 +1,53 @@
 # Project service for CRUD operations
 
-from sqlalchemy.future import select
-from sqlalchemy.ext.asyncio import AsyncSession
-from projects.models.project import Project
-from typing import Optional
+from motor.motor_asyncio import AsyncIOMotorDatabase
+from projects.models.project import Project, ProjectCreate, ProjectUpdate
+from typing import Optional, List
+from bson import ObjectId
 
 class ProjectService:
-    @staticmethod
-    async def create_project(db: AsyncSession, name: str, description: Optional[str] = None):
-        project = Project(name=name, description=description)
-        db.add(project)
-        await db.commit()
-        await db.refresh(project)
-        return project
+    def __init__(self, database: AsyncIOMotorDatabase):
+        self.collection = database.projects
 
-    @staticmethod
-    async def get_projects(db: AsyncSession):
-        result = await db.execute(select(Project))
-        return result.scalars().all()
+    async def create_project(self, project_data: ProjectCreate) -> Project:
+        project_dict = project_data.dict()
+        result = await self.collection.insert_one(project_dict)
+        created_project = await self.collection.find_one({"_id": result.inserted_id})
+        created_project["_id"] = str(created_project["_id"])
+        return Project(**created_project)
 
-    @staticmethod
-    async def get_project(db: AsyncSession, project_id: int):
-        return await db.get(Project, project_id)
+    async def get_projects(self) -> List[Project]:
+        projects = []
+        async for project_doc in self.collection.find():
+            project_doc["_id"] = str(project_doc["_id"])
+            projects.append(Project(**project_doc))
+        return projects
 
-    @staticmethod
-    async def update_project(db: AsyncSession, project_id: int, name: str, description: Optional[str] = None):
-        project = await db.get(Project, project_id)
-        if project:
-            project.name = name  # type: ignore
-            project.description = description  # type: ignore
-            await db.commit()
-            await db.refresh(project)
-        return project
+    async def get_project(self, project_id: str) -> Optional[Project]:
+        if not ObjectId.is_valid(project_id):
+            return None
+        project_doc = await self.collection.find_one({"_id": ObjectId(project_id)})
+        if project_doc:
+            project_doc["_id"] = str(project_doc["_id"])
+            return Project(**project_doc)
+        return None
 
-    @staticmethod
-    async def delete_project(db: AsyncSession, project_id: int):
-        project = await db.get(Project, project_id)
-        if project:
-            db.delete(project)  # This is the correct method, no await needed
-            await db.commit()
-        return project
+    async def update_project(self, project_id: str, project_data: ProjectUpdate) -> Optional[Project]:
+        if not ObjectId.is_valid(project_id):
+            return None
+        
+        update_dict = {k: v for k, v in project_data.dict().items() if v is not None}
+        if not update_dict:
+            return await self.get_project(project_id)
+            
+        await self.collection.update_one(
+            {"_id": ObjectId(project_id)}, 
+            {"$set": update_dict}
+        )
+        return await self.get_project(project_id)
+
+    async def delete_project(self, project_id: str) -> bool:
+        if not ObjectId.is_valid(project_id):
+            return False
+        result = await self.collection.delete_one({"_id": ObjectId(project_id)})
+        return result.deleted_count > 0
