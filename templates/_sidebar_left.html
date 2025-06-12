@@ -1,0 +1,24 @@
+<!-- templates/_sidebar.html -->
+<aside id="sidebar" class="fixed left-0 top-16 bottom-0 w-64 bg-gray-900 text-gray-100 shadow-lg z-40 panel-transition sidebar-closed lg:sidebar-open lg:relative lg:z-auto lg:top-0 lg:flex-shrink-0">
+    <h3 class="p-4 font-bold text-xl border-b border-gray-800">AI Chat</h3>
+    <nav class="flex-1 overflow-y-auto h-full">
+        <ul class="mt-4 space-y-2 px-2">
+            <li><a href="/" class="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">New Chat</a></li>
+            <li><a href="/chats" class="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">Saved Chats</a></li>
+            {% if recent_chats %}
+            <li class="mt-2">
+                <div class="text-xs text-gray-400 uppercase px-4 pb-1">Recent</div>
+                <ul class="space-y-1">
+                    {% for chat in recent_chats %}
+                    <li>
+                        <a href="/chats#chat-{{ chat.id }}" class="block px-4 py-1 rounded hover:bg-gray-800 truncate text-sm transition-colors" title="{{ chat.user_query }}">
+                            {{ chat.user_query | truncate(32) }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+</aside>

@@ -1,13 +1,19 @@
 <!-- templates/_project_files.html -->
-<aside id="projectFiles" class="fixed right-0 top-0 h-full w-64 bg-gray-900 text-gray-100 shadow-lg z-30 flex flex-col">
-    <div class="p-4 font-bold text-xl border-b border-gray-800">Project Files</div>
-    <div class="flex-1 overflow-y-auto p-4">
-         <h3 class="text-sm font-semibold text-gray-400 mb-2">Recent Projects</h3>
+<aside id="projectFiles" class="fixed right-0 top-16 bottom-0 w-64 bg-gray-900 text-gray-100 shadow-lg z-40 panel-transition project-files-closed lg:project-files-open lg:relative lg:z-auto lg:top-0 lg:flex-shrink-0">
+    <h3 class="p-4 font-bold text-xl border-b border-gray-800">Projects</h3>
+    <nav class="flex-1 overflow-y-auto h-full">
+        <ul class="mt-4 space-y-2 px-2">
+            <li><a href="/projects" class="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">All Projects</a></li>
+            <li><a href="/projects/create" class="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">Create New Project</a></li>
+        </ul>
+        <div class="mt-2">
+            <div class="text-xs text-gray-400 uppercase px-4 pb-1">Recent</div>
             <div id="sidebar-projects">
                 <!-- This will be populated dynamically -->
                 <p class="text-sm text-gray-500">Loading projects...</p>
             </div>
-    </div>
+        </div>
+    </nav>
 </aside>
 
 <script>
@@ -18,15 +24,14 @@ async function loadSidebarProjects() {
         if (response.ok) {
             const projects = await response.json();
             const container = document.getElementById('sidebar-projects');
-            
             if (projects.length === 0) {
                 container.innerHTML = '<p class="text-sm text-gray-500">No projects yet</p>';
             } else {
                 container.innerHTML = projects.slice(0, 5).map(project => 
-                    `<div class="text-sm py-1 px-2 rounded hover:bg-gray-800 cursor-pointer" data-project-id="${project.id}">
+                    `<a href="/projects#project-${project.id}" class="block px-4 py-1 rounded hover:bg-gray-800 truncate text-sm transition-colors mb-1" title="${project.name}">
                         <div class="font-medium">${project.name}</div>
                         <div class="text-gray-400 text-xs truncate">${project.description || 'No description'}</div>
-                    </div>`
+                    </a>`
                 ).join('');
             }
         }
@@ -36,6 +41,5 @@ async function loadSidebarProjects() {
     }
 }
 
-// Load projects when page loads
 document.addEventListener('DOMContentLoaded', loadSidebarProjects);
 </script>

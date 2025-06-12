@@ -82,35 +82,17 @@
 
     <!-- Main Layout Container -->
     <div class="pt-16 min-h-screen flex">
-        <!-- Sidebar -->
-        <aside id="sidebar" class="fixed left-0 top-16 bottom-0 w-64 bg-gray-900 text-gray-100 shadow-lg z-40 panel-transition sidebar-closed lg:sidebar-open lg:relative lg:z-auto lg:top-0 lg:flex-shrink-0">
-            <div class="p-4 font-bold text-xl border-b border-gray-800">AI Chat</div>
-            <nav class="flex-1 overflow-y-auto h-full">
-                <ul class="mt-4 space-y-2 px-2">
-                    <li><a href="/" class="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">New Chat</a></li>
-                    <li><a href="/chats" class="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">Chat History</a></li>
-                    <li><a href="/projects" class="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">Projects</a></li>
-                    <li><a href="#" class="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">Settings</a></li>
-                </ul>
-            </nav>
-        </aside>
+        <!-- Sidebar Left-->
+        {% include "_sidebar_left.html" %}
 
         <!-- Main Content Area -->
         <main id="mainContent" class="flex-1 px-4 pb-24 min-h-screen">
             {% block content %}{% endblock %}
         </main>
 
-        <!-- Project Files Panel -->
-        <aside id="projectFiles" class="fixed right-0 top-16 bottom-0 w-64 bg-gray-900 text-gray-100 shadow-lg z-40 panel-transition project-files-closed lg:project-files-open lg:relative lg:z-auto lg:top-0 lg:flex-shrink-0">
-            <div class="p-4 font-bold text-xl border-b border-gray-800">Project Files</div>
-            <div class="flex-1 overflow-y-auto p-4 h-full">
-                <h3 class="text-sm font-semibold text-gray-400 mb-2">Recent Projects</h3>
-                <div id="sidebar-projects">
-                    <!-- This will be populated dynamically -->
-                    <p class="text-sm text-gray-500">Loading projects...</p>
-                </div>
-            </div>
-        </aside>
+        <!-- Sidebar Right -->
+        {% include "_sidebar_right.html" %}
+        
     </div>
 
     {% include "_footer.html" %}
