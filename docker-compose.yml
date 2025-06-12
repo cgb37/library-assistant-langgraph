@@ -15,6 +15,7 @@ services:
       - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE:-library_assistant}
     depends_on:
       - mongodb
+    command: python watch.py
 
   mongodb:
     image: mongo:7
