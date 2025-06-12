@@ -1,12 +1,20 @@
 <!-- templates/_footer.html -->
-<footer class="fixed bottom-0 left-64 right-64 bg-gray-800 text-gray-100 px-8 py-4 flex items-center z-20 shadow">
-    <form id="chatForm" class="flex w-full items-center space-x-4">
-        <input type="text" id="chatInput" name="message" placeholder="Type your message..." class="flex-1 px-4 py-2 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" autocomplete="off" />
-        <label for="imageUpload" class="cursor-pointer flex items-center px-3 py-2 bg-gray-700 rounded hover:bg-gray-600">
-            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 16.5V19a2 2 0 002 2h14a2 2 0 002-2v-2.5M16 3.13a4 4 0 010 7.75M8 3.13a4 4 0 000 7.75M12 7v6m0 0l-2-2m2 2l2-2" /></svg>
-            <span>Upload</span>
-            <input id="imageUpload" name="image" type="file" accept="image/*" class="hidden" />
-        </label>
-        <button type="submit" class="px-4 py-2 bg-blue-600 rounded text-white hover:bg-blue-700">Send</button>
-    </form>
+<footer id="chatFooter" class="fixed bottom-0 left-0 right-0 bg-gray-800 text-gray-100 px-4 py-4 z-30 shadow-lg transition-all duration-300">
+    <div class="max-w-none mx-auto">
+        <form id="chatForm" class="flex w-full items-center space-x-2 sm:space-x-4">
+            <input type="text" id="chatInput" name="message" placeholder="Type your message..." 
+                   class="flex-1 px-3 py-2 sm:px-4 sm:py-2 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base" 
+                   autocomplete="off" />
+            <label for="imageUpload" class="cursor-pointer flex items-center px-2 py-2 sm:px-3 sm:py-2 bg-gray-700 rounded hover:bg-gray-600 transition-colors">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 sm:mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+                <span class="hidden sm:inline">Upload</span>
+                <input id="imageUpload" name="image" type="file" accept="image/*" class="hidden" />
+            </label>
+            <button type="submit" class="px-3 py-2 sm:px-4 sm:py-2 bg-blue-600 rounded text-white hover:bg-blue-700 transition-colors text-sm sm:text-base font-medium">
+                Send
+            </button>
+        </form>
+    </div>
 </footer>

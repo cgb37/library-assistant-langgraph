@@ -29,24 +29,27 @@ Integrate the LangGraph-powered library assistant from [`main.py`](main.py) into
 
 ---
 
-## Phase 3: (Optional, for future)
-- Add user session support.
-- Persist chat history.
-- Add tests and linting.
+## Phase 3: 
 - Add CRUD for projects.
   - Allow users to create projects with a name and description.
   - Display the list of projects in the right sidebar.
   - (Eventually) Associate chats with projects.
 
+
+## Phase 4:
+- Persist chat history.
+- store chats in mondgodb database "library_assistant" in a collection called "chats"
+
+## Phase 5:
+- Add user session support.
+- Add tests and linting.
+
 ---
 
-## Questions
-
-1. Should the chat be single-turn (one question/response at a time) or multi-turn (maintain conversation history)?
-2. Do you want to keep the CLI interface in [`main.py`](main.py) or move entirely to the web UI?
-3. Any authentication or access restrictions needed for the chat interface?
-4. Should we support both undergraduate and graduate routing in the UI, or just show the assistant's response?
+## Reminders
+- The app uses docker and docker compose 
+- the app uses requirements.txt for dependencies
+- The app uses mongodb for storage
+- the app uses tailwind for styling
 
 ---
-
-Let me know your preferences or if you want to adjust the plan!
