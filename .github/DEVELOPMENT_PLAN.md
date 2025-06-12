@@ -21,28 +21,32 @@ Integrate the LangGraph-powered library assistant from [`main.py`](main.py) into
 
 ## Phase 2: Basic Robustness
 
-4. **Error Handling**
+1. **Error Handling**
    - Add basic error handling for invalid input and backend errors (both in backend and frontend).
 
-5. **UI Feedback**
+2. **UI Feedback**
    - Show loading indicators while waiting for a response.
 
 ---
 
 ## Phase 3: 
-- Add CRUD for projects.
+1. **Add CRUD for projects.**
   - Allow users to create projects with a name and description.
   - Display the list of projects in the right sidebar.
-  - (Eventually) Associate chats with projects.
-
+  
+---
 
 ## Phase 4:
 - Persist chat history.
 - store chats in mondgodb database "library_assistant" in a collection called "chats"
+- include fields for user_query, ai_response, model_used, created_at
+- the save button should be on the response container in the upper right corner
+- there should be a copy to clipboard button beside the save button
+
+---
 
 ## Phase 5:
-- Add user session support.
-- Add tests and linting.
+1. **Associate chats with projects.**
 
 ---
 
@@ -51,5 +55,11 @@ Integrate the LangGraph-powered library assistant from [`main.py`](main.py) into
 - the app uses requirements.txt for dependencies
 - The app uses mongodb for storage
 - the app uses tailwind for styling
+- the app must be modular
+- maintain separation of concerns
+- follow SOLID design principles
+- create separate javascript files when appropriate
+- templates should be organized by module
+
 
 ---
